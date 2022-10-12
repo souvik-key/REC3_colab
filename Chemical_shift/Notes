@@ -1,0 +1,41 @@
+1. catdcd -o HypaCas_R1-4_stride10000.trr -otype trr -stride 10 HypaCas_R1-4_stride1000_prot.dcd [in /mnt/mainpool] ## for prot only traj 40 frames per rep
+
+2. run job.sh [break the trajs to individual frame pdbs and then edit the pdbs to replace HIE with HIS.. necessary for shiftX2 to run]
+
+3. python shiftx2.py -b "/scratch/SOUVIK/Lisi_NMR_Mutants/Hypa_0MM/frames_for_CS/frame*.pdb" -a BACKBONE  ## getting CS for backbone
+## for running shiftX2.py, python2 is needed.. so i'm running in conda environment py2.7
+   
+
+#### ----- Notes on shiftx2 installation: ----- ##########
+
+1. SHIFTX2 includes a version of legacy BLAST (version 2.2.22) which should run under
+Linux with i386 CPU. If your system architecture is different from i386 or your OS
+is not Linux, you need to download the suitable version of *legacy* BLAST from:
+
+ftp://ftp.ncbi.nlm.nih.gov/blast/executables/release/2.2.22/
+
+and replace the folder shiftx2/shifty2/blast with the unzipped files. Make sure the
+name of the BLAST folder is shiftx2/shifty2/blast and all BLAST executable should be
+located in shiftx2/shifty2/blast/bin/
+
+
+WARNING: BLAST website doesn't have legacy databases anymore. So look into "https://anaconda.org/biocore/blast-legacy/files"
+
+
+
+2. with error: sh: /tmp/1665455194/1665455198/xalign_x: /lib/ld-linux.so.2: bad ELF interpreter: No such file or directory
+
+The cause of the “bad ELF interpreter” error is usually because the operating system doesn’t have the support libraries to run 32-bit applications, so we need to install them
+
+
+sudo yum provides ld-linux.so.2 ## get the package name
+sudo yum install epel-release
+sudo yum install dnf
+sudo dnf install glibc.i686 ## install package
+
+
+3. replace HIE with HIS in pdb file
+
+##### ----------------------------------------------- ##############
+
+4. for all the pdbs we will get frame*.pdb.cs where the chemical shift values are printed. Now to process those files to obtain average chemical shift for each atom and associated stdeviation, run "calc_avg_CS.sh". This scipt will ask for 2 atoms; 1. H (default) and 2. other backbone atoms like N/C/CA/CB. And it will out put 3 files containing the average and stdev values 1. one file for the chemical shift perturbation correspond to both the given input atoms 2. one file for H atom 3. one file for the 2nd atom
