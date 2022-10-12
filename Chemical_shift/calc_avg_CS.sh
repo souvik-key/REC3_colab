@@ -1,4 +1,4 @@
-#!/bin/csh
+#!/bin/csh 
 
 ### Combined chemical shift perturbation of 1H & 15N/13C (for the time being, its only for REC3) ###
 
@@ -16,10 +16,18 @@ set j = 0
 while ( $j <= $v )
   sed -e 's/,/ /g' frame$j\.pdb.cs > frame$j\_new.pdb.cs
   sed -i '1d' frame$j\_new.pdb.cs
+  if ($n2 == "CB") then
+	awk -v v1=$n1 '{if (($1>493) && ($1<710) && (($3==v1)) && (($2!="P") && ($2!="G")) ) print $0 }' frame$j\_new.pdb.cs > frame$j\_REC3_$n1\_comb.pdb.cs
+	awk -v v2=$n2 '{if (($1>493) && ($1<710) && (($3==v2)) && (($2!="P") && ($2!="G")) ) print $0 }' frame$j\_new.pdb.cs > frame$j\_REC3_$n2\_comb.pdb.cs
+  else
+       awk -v v1=$n1 '{if (($1>493) && ($1<710) && ($3==v1) && ($2!="P")) print $0 }' frame$j\_new.pdb.cs > frame$j\_REC3_$n1\_comb.pdb.cs
+       awk -v v2=$n2 '{if (($1>493) && ($1<710) && ($3==v2) && ($2!="P")) print $0 }' frame$j\_new.pdb.cs > frame$j\_REC3_$n2\_comb.pdb.cs
+  endif
+
   awk -v v1=$n1 '{if (($1>493) && ($1<710) && ($3==v1)) print $0 }' frame$j\_new.pdb.cs > frame$j\_REC3_$n1\.pdb.cs
   awk -v v2=$n2 '{if (($1>493) && ($1<710) && ($3==v2)) print $0 }' frame$j\_new.pdb.cs > frame$j\_REC3_$n2\.pdb.cs
-
-
+ 
+  
   @ j++
 
 end
@@ -27,9 +35,9 @@ end
 
 #####---- Avg combined perturbation----- ###################
 if ($n2 == "N") then
-	paste -d ' ' frame0_REC3_H.pdb.cs frame0_REC3_N.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.04*($8^2))))}' > temp1.cs
+	paste -d ' ' frame0_REC3_H_comb.pdb.cs frame0_REC3_N_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.04*($8^2))))}' > temp1.cs
 else
-	paste -d ' ' frame0_REC3_H.pdb.cs frame0_REC3_$n2\.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs
+	paste -d ' ' frame0_REC3_H_comb.pdb.cs frame0_REC3_$n2\_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs
 endif
 cp temp1.cs temp3.cs
 
@@ -40,9 +48,9 @@ awk '{print $4}' frame0_REC3_$n2\.pdb.cs > temp3_$n2\.cs # for 2nd atom average
 set j = 1
 while ( $j <= $v )
   if ($n2 == "N") then
-	  paste -d ' ' frame$j\_REC3_H.pdb.cs frame$j\_REC3_N.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.04*($8^2))))}' > temp1.cs
+	  paste -d ' ' frame$j\_REC3_H_comb.pdb.cs frame$j\_REC3_N_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.04*($8^2))))}' > temp1.cs
   else
-         paste -d ' ' frame0_REC3_H.pdb.cs frame0_REC3_$n2\.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs 
+         paste -d ' ' frame0_REC3_H_comb.pdb.cs frame0_REC3_$n2\_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs 
   endif
   paste -d ' ' temp1.cs temp3.cs | awk '{print $1+$2} ' > temp2.cs  ## combined perturbation 
   paste -d ' ' frame$j\_REC3_H.pdb.cs temp3_H.cs | awk '{print $4+$5} ' > temp2_H.cs  ## for H
@@ -63,9 +71,9 @@ awk -v var=$v '{print $1/var}' temp3_$n2\.cs > average_$n2\.cs ## for 2nd atom
 #####---- stdev ----- ###################
 
 if ($n2 == "N") then
-        paste -d ' ' frame0_REC3_H.pdb.cs frame0_REC3_N.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.04*($8^2))))}' > temp1.cs
+        paste -d ' ' frame0_REC3_H_comb.pdb.cs frame0_REC3_N_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.04*($8^2))))}' > temp1.cs
 else
-        paste -d ' ' frame0_REC3_H.pdb.cs frame0_REC3_$n2\.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs
+        paste -d ' ' frame0_REC3_H_comb.pdb.cs frame0_REC3_$n2\_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs
 endif
 paste -d ' ' temp1.cs average_H_$n2\.cs | awk '{print ($1-$2)^2} ' > temp2.cs
 paste -d ' ' frame0_REC3_H.pdb.cs average_H.cs | awk '{print ($4-$5)^2} ' > temp2_H.cs
@@ -78,9 +86,9 @@ cp temp2_$n2\.cs temp_run_$n2\.cs
 set j = 1
 while ( $j <= $v )
   if ($n2 == "N") then
-          paste -d ' ' frame$j\_REC3_H.pdb.cs frame$j\_REC3_N.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.04*($8^2))))}' > temp1.cs
+          paste -d ' ' frame$j\_REC3_H_comb.pdb.cs frame$j\_REC3_N_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.04*($8^2))))}' > temp1.cs
   else
-         paste -d ' ' frame0_REC3_H.pdb.cs frame0_REC3_$n2\.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs
+         paste -d ' ' frame0_REC3_H_comb.pdb.cs frame0_REC3_$n2\_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs
   endif
   paste -d ' ' temp1.cs average_H_$n2\.cs | awk '{print ($1-$2)^2} ' > temp2.cs
   paste -d ' ' frame$j\_REC3_H.pdb.cs average_H.cs | awk '{print ($4-$5)^2} ' > temp2_H.cs
@@ -104,7 +112,7 @@ awk -v var=$v '{print sqrt($1/var)}' temp_run_$n2\.cs > stdev_$n2\.cs ## for 2nd
 
 #################-----------------------------------------------####################
 echo "Resid   Avergae   Stdev" > avg_stdev_H_$n2\.cs
-paste -d ' ' average_H_$n2\.cs stdev_H_$n2\.cs frame1_REC3_$n2\.pdb.cs | awk '{print $3+3," ", $1," ", $2}' >> avg_stdev_H_$n2\.cs
+paste -d ' ' average_H_$n2\.cs stdev_H_$n2\.cs frame1_REC3_$n2\_comb.pdb.cs | awk '{print $3+3," ", $1," ", $2}' >> avg_stdev_H_$n2\.cs
 
 echo "Resid   Avergae   Stdev" > avg_stdev_H.cs
 paste -d ' ' average_H.cs stdev_H.cs frame1_REC3_H.pdb.cs | awk '{print $3+3," ", $1," ", $2}' >> avg_stdev_H.cs
