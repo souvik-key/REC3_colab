@@ -103,14 +103,14 @@ awk -v var=$v '{print sqrt($1/var)}' temp_run_H.cs > stdev_H.cs  ## for H
 awk -v var=$v '{print sqrt($1/var)}' temp_run_$n2\.cs > stdev_$n2\.cs ## for 2nd atom
 
 #################-----------------------------------------------####################
-echo "Resid   Avergae   Stdev" >> avg_stdev_H_$n2\.cs
-paste -d ' ' average_H_$n2\.cs stdev_H_$n2\.cs frame1_REC3_H.pdb.cs | awk '{print $3+3," ", $1," ", $2}' >> avg_stdev_H_$n2\.cs
+echo "Resid   Avergae   Stdev" > avg_stdev_H_$n2\.cs
+paste -d ' ' average_H_$n2\.cs stdev_H_$n2\.cs frame1_REC3_$n2\.pdb.cs | awk '{print $3+3," ", $1," ", $2}' >> avg_stdev_H_$n2\.cs
 
-echo "Resid   Avergae   Stdev" >> avg_stdev_H.cs
+echo "Resid   Avergae   Stdev" > avg_stdev_H.cs
 paste -d ' ' average_H.cs stdev_H.cs frame1_REC3_H.pdb.cs | awk '{print $3+3," ", $1," ", $2}' >> avg_stdev_H.cs
 
-echo "Resid   Avergae   Stdev" >> avg_stdev_$n2\.cs
-paste -d ' ' average_$n2\.cs stdev_$n2\.cs frame1_REC3_H.pdb.cs | awk '{print $3+3," ", $1," ", $2}' >> avg_stdev_$n2\.cs
+echo "Resid   Avergae   Stdev" > avg_stdev_$n2\.cs
+paste -d ' ' average_$n2\.cs stdev_$n2\.cs frame1_REC3_$n2\.pdb.cs | awk '{print $3+3," ", $1," ", $2}' >> avg_stdev_$n2\.cs
 
 
 rm -f temp*.cs
