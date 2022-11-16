@@ -50,7 +50,7 @@ while ( $j <= $v )
   if ($n2 == "N") then
 	  paste -d ' ' frame$j\_REC3_H_comb.pdb.cs frame$j\_REC3_N_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.04*($8^2))))}' > temp1.cs
   else
-         paste -d ' ' frame0_REC3_H_comb.pdb.cs frame0_REC3_$n2\_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs 
+         paste -d ' ' frame$j\_REC3_H_comb.pdb.cs frame$j\_REC3_$n2\_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs 
   endif
   paste -d ' ' temp1.cs temp3.cs | awk '{print $1+$2} ' > temp2.cs  ## combined perturbation 
   paste -d ' ' frame$j\_REC3_H.pdb.cs temp3_H.cs | awk '{print $4+$5} ' > temp2_H.cs  ## for H
@@ -88,7 +88,7 @@ while ( $j <= $v )
   if ($n2 == "N") then
           paste -d ' ' frame$j\_REC3_H_comb.pdb.cs frame$j\_REC3_N_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.04*($8^2))))}' > temp1.cs
   else
-         paste -d ' ' frame0_REC3_H_comb.pdb.cs frame0_REC3_$n2\_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs
+         paste -d ' ' frame$j\_REC3_H_comb.pdb.cs frame$j\_REC3_$n2\_comb.pdb.cs | awk '{print sqrt(0.5*(($4^2)+(0.25*($8^2))))}' > temp1.cs
   endif
   paste -d ' ' temp1.cs average_H_$n2\.cs | awk '{print ($1-$2)^2} ' > temp2.cs
   paste -d ' ' frame$j\_REC3_H.pdb.cs average_H.cs | awk '{print ($4-$5)^2} ' > temp2_H.cs
